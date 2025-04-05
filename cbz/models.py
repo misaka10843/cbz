@@ -1,5 +1,5 @@
 from cbz.constants import COMIC_FIELDS, PAGE_FIELDS, Format, YesNo, Manga, AgeRating, LanguageISO, Rating, PageType
-from cbz.utils import verify_attr, default_attr
+from cbz.utils import default_attr
 
 
 class BaseModel:
@@ -38,7 +38,7 @@ class BaseModel:
             if field_type not in (int, str, bool):
                 value = field_type(value)
             # Verify that the assigned value matches the expected type
-            verify_attr(field_type, key, value)
+            # verify_attr(field_type, key, value)
         except (AttributeError, KeyError):
             pass
         super().__setattr__(key, value)
