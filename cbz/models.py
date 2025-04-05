@@ -62,7 +62,7 @@ class ComicModel(BaseModel):
     """
     title: str
     series: str
-    number: int
+    number: int | float
     count: int
     volume: int
     alternate_series: str
