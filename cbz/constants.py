@@ -130,7 +130,7 @@ class LanguageISO(str):
 COMIC_FIELDS = {
     'title': ('Title', str),
     'series': ('Series', str),
-    'number': ('Number', int),
+    'number': ('Number', Union[int, float]),
     'count': ('Count', int),
     'volume': ('Volume', int),
     'alternate_series': ('AlternateSeries', str),

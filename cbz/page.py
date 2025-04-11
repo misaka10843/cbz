@@ -1,10 +1,7 @@
-from __future__ import annotations
-
 import base64
-
 from io import BytesIO
-from typing import Union, Optional
 from pathlib import Path
+from typing import Union, Optional
 
 from PIL import Image
 
@@ -57,7 +54,7 @@ class PageInfo(PageModel):
         self.__content = value
 
     @classmethod
-    def loads(cls, data: Union[str, bytes], **kwargs) -> PageInfo:
+    def loads(cls, data: Union[str, bytes], **kwargs) -> 'PageInfo':
         """
         Class method to create a PageInfo instance from bytes or base64-encoded data.
 
@@ -78,7 +75,7 @@ class PageInfo(PageModel):
         return cls(data, **kwargs)
 
     @classmethod
-    def load(cls, path: Union[Path, str], **kwargs) -> PageInfo:
+    def load(cls, path: Union[Path, str], **kwargs) -> 'PageInfo':
         """
         Class method to create a PageInfo instance from a file path.
 
@@ -99,13 +96,6 @@ class PageInfo(PageModel):
         with path.open(mode='rb') as f:
             kwargs.setdefault('name', path.name)
             return cls(f.read(), **kwargs)
-
-    def show(self) -> None:
-        """
-        Displays the page content using an image viewer.
-        """
-        with Image.open(BytesIO(self.content)) as f:
-            f.show()
 
     def save(self, path: Union[Path, str]) -> None:
         """

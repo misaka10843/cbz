@@ -1,16 +1,13 @@
-from __future__ import annotations
-
 import zipfile
-
 from datetime import datetime, timezone
 from enum import Enum
 from io import BytesIO
-from typing import Union
 from pathlib import Path
+from typing import Union, List
 
 import xmltodict
 
-from cbz.constants import XML_NAME, COMIC_FIELDS, IMAGE_FORMAT, PAGE_FIELDS
+from cbz.constants import XML_NAME, COMIC_FIELDS, PAGE_FIELDS
 from cbz.models import ComicModel
 from cbz.page import PageInfo
 from cbz.utils import repr_attr
@@ -21,113 +18,33 @@ class ComicInfo(ComicModel):
     ComicInfo class that represents the comic book information and pages.
     """
 
-    def __init__(self, pages: list[PageInfo], **kwargs):
+    def __init__(self, pages: List[PageInfo], **kwargs):
         """
         Initialize the ComicInfo instance with pages and additional attributes.
 
         Args:
-            pages (list[PageInfo]): List of PageInfo objects representing the comic pages.
+            pages (List[PageInfo]): List of PageInfo objects representing the comic pages.
             **kwargs: Additional attributes for the comic.
 
         Attributes:
-            pages (list[PageInfo]): Stores the comic pages.
+            pages (List[PageInfo]): Stores the comic pages.
         """
         super(ComicInfo, self).__init__(**kwargs)
         self.pages = pages
 
     @classmethod
-    def from_pages(cls, pages: list[PageInfo], **kwargs) -> ComicInfo:
+    def from_pages(cls, pages: List[PageInfo], **kwargs) -> 'ComicInfo':
         """
         Create a ComicInfo instance from pages and additional attributes.
 
         Args:
-            pages (list[PageInfo]): List of PageInfo objects representing the comic pages.
+            pages (List[PageInfo]): List of PageInfo objects representing the comic pages.
             **kwargs: Additional attributes for the comic.
 
         Returns:
             ComicInfo: An instance of ComicInfo.
         """
         return cls(pages, **kwargs)
-
-    @classmethod
-    def from_cbz(cls, path: Union[Path, str]) -> ComicInfo:
-        """
-        Create a ComicInfo instance from a CBZ file.
-
-        Args:
-            path (Union[Path, str]): Path to the CBZ file.
-
-        Returns:
-            ComicInfo: An instance of ComicInfo.
-
-        Raises:
-            ValueError: If the provided path is not a Path object or a string.
-        """
-        if not isinstance(path, (Path, str)):
-            raise ValueError(f'Expecting Path object or path string, got {path!r}')
-        return cls.__unpack_zip(path)
-
-    @staticmethod
-    def __unpack_zip(path: Path) -> ComicInfo:
-        """
-        Unpack a CBZ file and create a ComicInfo instance.
-
-        Args:
-            path (Path): Path to the CBZ file.
-
-        Returns:
-            ComicInfo: An instance of ComicInfo.
-        """
-
-        def __info(items: dict, fields: dict) -> dict:
-            """
-            Extract and convert field information from the provided items and fields.
-
-            Args:
-                items (dict): Dictionary containing item attributes.
-                fields (dict): Dictionary containing field mappings and types.
-
-            Returns:
-                dict: Dictionary with extracted and converted field information.
-            """
-            content = {}
-            for key, (field_key, field_type) in fields.items():
-                if field_key in items:
-                    content[key] = field_type(items[field_key])
-            return content
-
-        pages = []
-
-        with zipfile.ZipFile(path, 'r', zipfile.ZIP_STORED) as zf:
-            names = zf.namelist()
-            comic_info = {}
-
-            if XML_NAME in names:
-                with zf.open(XML_NAME, 'r') as f:
-                    comic_info = xmltodict.parse(f.read()).get('ComicInfo', {})
-                names.remove(XML_NAME)
-
-            comic = __info(
-                items=comic_info,
-                fields=COMIC_FIELDS
-            )
-
-            pages_info = comic_info.get('Pages', {}).get('Page', [])
-            for i, name in enumerate(names):
-                suffix = Path(name).suffix
-                if suffix:
-                    assert suffix in IMAGE_FORMAT, f'Unsupported image format: {suffix}'
-                    with zf.open(name, 'r') as f:
-                        page_info = {}
-                        if i < len(pages_info):
-                            page_info = __info(
-                                items=pages_info[i],
-                                fields=PAGE_FIELDS
-                            )
-                        page_info['name'] = Path(f.name).name
-                        pages.append(PageInfo.loads(data=f.read(), **page_info))
-
-        return ComicInfo.from_pages(pages=pages, **comic)
 
     def get_info(self) -> dict:
         """
@@ -199,7 +116,6 @@ class ComicInfo(ComicModel):
             )
             for i, page in enumerate(self.pages):
                 name = page.name
-                # If the page does not have a name or renaming is enabled, generate a sequential name for the page.
                 if not name or rename:
                     name = f'page-{i + 1:03d}{page.suffix}'
                 zf.writestr(name, page.content)

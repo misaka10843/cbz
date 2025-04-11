@@ -1,23 +1,24 @@
 # CBZ
 
-CBZ is a Python library designed for creating, manipulating, and viewing comic book files in CBZ format. It offers a straightforward interface to pack comic pages into CBZ archives, extract metadata, and display comics using a built-in player.
+This repository optimizes some of the content of the upstream repository for features such as better compression
 
-## Features
+## Compare upstream repository modifications
 
-- 🚀 Seamless Installation via [pip](#installation)
-- 📚 Pack images into CBZ format for comics and manga
-- 📝 Extract and manage title, series, format, and more
-- 🖼️ Handle comic pages with attributes like type and format
-- 📦 Unpack CBZ files to retrieve comic information
-- 🛠️ Built-in player for viewing CBZ comics
-- ❤️ Fully Open-Source! Pull Requests Welcome
+- Remove superfluous functionality and just compress it
+- Optimized series number with support for floating points
 
 ## Installation
 
-Install KeyDive from PyPI using Poetry:
+Install cbz from GitHub using git:
 
 ```shell
-pip install cbz
+pip install git+https://github.com/misaka10843/cbz.git
+```
+
+or use mirrors:
+
+```shell
+pip install git+https://ghproxy.net/https://github.com/misaka10843/cbz.git
 ```
 
 ## Quick Start
@@ -58,9 +59,6 @@ if __name__ == '__main__':
         age_rating=AgeRating.PENDING
     )
 
-    # Show the comic using the show()
-    comic.show()
-
     # Pack the comic book content into a CBZ file format
     cbz_content = comic.pack()
 
@@ -69,23 +67,6 @@ if __name__ == '__main__':
 
     # Write the CBZ content to the specified path
     cbz_path.write_bytes(cbz_content)
-````
-
-## Player
-
-CBZ includes a command-line player for viewing CBZ comic book files. Simply run cbzplayer <file> to launch the player with the specified CBZ file.
-
-````shell
-usage: cbzplayer [-h] <file>
-
-Launch CBZ player with a comic book file
-
-positional arguments:
-  <file>      Path to the CBZ comic book file.
-
-options:
-  -h, --help  show this help message and exit
-
 ````
 
 ## Detailed Usage
@@ -118,29 +99,12 @@ comic = ComicInfo.from_pages(
 )
 ```
 
-### Extracting Metadata
-
-Retrieve comic information as a dictionary using `get_info()`:
-
-```python
-info = comic.get_info()
-print(info)
-```
-
 ### Packing into CBZ Format
 
 Pack the comic into a CBZ file format:
 
 ```python
 cbz_content = comic.pack()
-```
-
-### Unpacking from CBZ
-
-Load a comic from an existing CBZ file:
-
-```python
-comic_from_cbz = ComicInfo.from_cbz('/path/to/your_comic.cbz')
 ```
 
 ## Contributors
