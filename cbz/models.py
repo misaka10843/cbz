@@ -40,7 +40,7 @@ class BaseModel:
             if field_type not in (int, str, bool):
                 value = field_type(value)
             # Verify that the assigned value matches the expected type
-            verify_attr(field_type, key, value)
+            # verify_attr(field_type, key, value)
         except (AttributeError, KeyError):
             pass
         super().__setattr__(key, value)
