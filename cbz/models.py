@@ -64,7 +64,7 @@ class ComicModel(BaseModel):
     """
     title: str
     series: str
-    number: Union[int, float]
+    number: int
     count: int
     volume: int
     alternate_series: str
